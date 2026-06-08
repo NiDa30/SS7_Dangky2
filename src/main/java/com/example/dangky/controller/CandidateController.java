@@ -1,5 +1,6 @@
 package com.example.dangky.controller;
 
+import com.example.dangky.dto.ApiResponse;
 import com.example.dangky.dto.CandidateCreateDTO;
 import com.example.dangky.model.Candidate;
 import com.example.dangky.repository.CandidateRepository;
@@ -23,7 +24,7 @@ public class CandidateController {
     }
 
     @PostMapping
-    public ResponseEntity<Candidate> registerCandidate(@Valid @RequestBody CandidateCreateDTO dto) {
+    public ResponseEntity<ApiResponse<Candidate>> registerCandidate(@Valid @RequestBody CandidateCreateDTO dto) {
         // Map DTO to Entity
         Candidate candidate = new Candidate();
         candidate.setFullName(dto.getFullName());
@@ -34,7 +35,14 @@ public class CandidateController {
         // Save candidate in database
         Candidate savedCandidate = candidateRepository.save(candidate);
 
-        // Return saved entity with 201 Created status
-        return new ResponseEntity<>(savedCandidate, HttpStatus.CREATED);
+        // Wrap candidate in ApiResponse success format
+        ApiResponse<Candidate> response = new ApiResponse<>(
+                "success",
+                "Candidate registered successfully",
+                savedCandidate
+        );
+
+        // Return response with 201 Created status
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
